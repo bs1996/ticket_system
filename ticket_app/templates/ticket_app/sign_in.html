@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+  {% block title %}Sign in{% endblock title %}
+
+  {% block content %}
+  <h1>Sign in</h1>
+
+  {% if submitted %}
+    <p class="success">
+     You have signed in successfully. Thank you.
+   </p>
+ {% else %}
+   <form action="" method="post" >
+   <table>
+     {{ form.as_table }}
+     <tr>
+       <td>&nbsp;</td>
+       <td><input type="submit" value="Sign in"></td>
+     </tr>
+   </table>
+   {% csrf_token %}
+   </form>
+ {% endif %}
+ {% endblock content %}

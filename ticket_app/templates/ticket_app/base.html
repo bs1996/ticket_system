@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <title>
+        {% block title %}
+        {{ page_title|default:"IT support" }}
+        {% endblock title %}
+     </title>
+     <link href="{% static 'main.css' %}" rel="stylesheet" type="text/css">
+</head>
+<body>
+ <ul>
+  <li><a href="/">Home</a></li>
+  <li><a href="/settings">Settings</a></li>
+  <li><a href="/contact">Contact</a></li>
+  <li><a href="/login" >Sign in</a></li>
+     <li><a href="/register" >Create account</a></li>
+
+</ul>
+ <section id="main">
+       {% block content %}
+       <p>Welcome to our IT support website!</p>
+       {% endblock content %}
+</body>
+</html>
