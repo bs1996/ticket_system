@@ -12,16 +12,30 @@
 </head>
 <body>
  <ul>
+     {% if user.is_authenticated %}
+     <li><a href="/">Home</a></li>
+  <li><a href="/contact">Contact</a></li>
+     <li><a href="/create_ticket" >Create Ticket</a></li>
+     <li><a href="/order" >Order something</a></li>
+     <li><a href="/mytickets" >My Tickets </a></li>
+     <li><a href="/orders" >My orders </a></li>
+
+     <li><a href="/signout" >Sign Out</a></li>
+      {% else %}
   <li><a href="/">Home</a></li>
   <li><a href="/settings">Settings</a></li>
   <li><a href="/contact">Contact</a></li>
   <li><a href="/login" >Sign in</a></li>
      <li><a href="/register" >Create account</a></li>
+     {% endif  %}
+
+
 
 </ul>
  <section id="main">
        {% block content %}
        <p>Welcome to our IT support website!</p>
        {% endblock content %}
+
 </body>
 </html>
