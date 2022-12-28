@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>My Incidents</h3>
+<hr>
+
+
+    {% csrf_token %}
+{% for field in num %}
+
+<a href="/incident_user" >INC{{ field }}</a> <br></br>
+
+
+
+{% endfor %}
+
+
+
+
+{% endblock content %}
