@@ -10,8 +10,9 @@ CHOICES = (
     ('major', 'MAJOR'),
 )
 
+
 class LoginForm(forms.ModelForm):
-	username = forms.CharField(required=True)
+	username = forms.CharField(required=True) 
 	password = forms.CharField(widget=PasswordInput)
 
 	class Meta:
@@ -61,7 +62,16 @@ class TicketForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
 	description = forms.CharField(required=True)
 
-
 	class Meta:
 		model = Order
 		fields = ['description']
+
+
+class AddCommentForm(forms.Form):
+	add_comment = forms.CharField(required=True)
+
+	def clean(self):
+		cleaned_data = super(AddCommentForm, self).clean()
+		add_comment = cleaned_data.get("add_comment")
+
+		return cleaned_data

@@ -9,6 +9,77 @@ ul {
   overflow: hidden;
   background-color: #333;
 }
+#text{
+width: 200px;
+position: absolute;
+top: 20%;
+left: 5%;
+}
+
+#fields{
+width: 200px;
+position: absolute;
+top: 20%;
+left: 20%;
+}
+
+#description1{
+width: 200px;
+position: absolute;
+top: 80%;
+left: 20%;
+}
+#description2{
+position: absolute;
+top: 95%;
+left: 10%;
+}
+#description{
+min-height: 200px;
+max-height: 200px;
+min-width: 400px;
+max-width: 400px;
+
+width: 400px;
+height: 200px;
+}
+
+#chat1{
+width: 400px;
+height: 400px;
+position: absolute;
+top: 130%;
+left: 20%;
+text-align:left ;
+}
+#chat2{
+position: absolute;
+top: 140%;
+left: 15%;
+}
+#add_comment{
+width: 400px;
+position: absolute;
+top: 120%;
+left: 20%;
+}
+#comment{
+width: 400px;
+position: absolute;
+top: 118%;
+left: 12%;
+}
+#save{
+position: absolute;
+top: 11.5%;
+left: 8%;
+}
+#chat{
+min-width: 800px;
+max-width: 800px;
+max-height: 500px;
+min-height: 500px;
+}
 
 li {
   float: left;

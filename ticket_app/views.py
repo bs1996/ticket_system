@@ -9,10 +9,11 @@ from django.contrib.auth import login
 from django.contrib import messages
 from .models import User, Agent, Customer, Ticket
 from django.contrib.auth.forms import UserCreationForm
-from .forms import RegisterUserForm, CustomerForm, TicketForm, OrderForm
+from .forms import RegisterUserForm, CustomerForm, TicketForm, OrderForm, AddCommentForm
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth import authenticate, login, logout
+from .prepare_ticket_data import prepare_data
 
 
 def register(request):
@@ -80,9 +81,10 @@ def create_ticket(request):
             status = 'In Progress'
             team = 'L1'
             SLA = '0'
+            comments = ''
             ticket = Ticket(User=ticket_owner, number=number, description=description,
                             serial_number_or_client_name=serial_number_or_client_name, type=type, SLA=SLA,
-                            assigned_to=assigned_to, team=team, status=status)
+                            assigned_to=assigned_to, team=team, status=status, comments=comments)
             ticket.save()
             ticket = Ticket.objects.latest('id')
             ticket.number = ticket.id + 1000
@@ -113,5 +115,26 @@ def my_tickets(request):
     num = []
     for ticket in tickets:
         num.append(ticket.number)
-    print(num)
+
     return render(request, 'my_tickets.html', {'title': title, 'num': num})
+
+
+def incident_user(request, number):
+    if request.method == 'POST':
+        form = AddCommentForm(request.POST)
+        if form.is_valid():
+            comment = request.POST['add_comment']
+            form = AddCommentForm()
+            ticket_data, comments, ticket_description, text = prepare_data(number, comment)
+            return render(request, 'Incident_user.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
+                                                   'chat': comments, 'description': ticket_description,
+                                                   'form': form})
+    else:
+        form = AddCommentForm()
+        ticket_data, comments, ticket_description, text = prepare_data(number, 0)
+        return render(request, 'Incident_user.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
+                                                      'chat': comments, 'description': ticket_description,
+                                                      'form': form})
+
+
+

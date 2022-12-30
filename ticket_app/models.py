@@ -67,6 +67,7 @@ class Ticket(models.Model):
     assigned_to = models.CharField('assigned_to', max_length=20)
     team = models.CharField('support_team', max_length=120)
     status = models.CharField('status', max_length=120)
+    comments = models.JSONField('comments', max_length=1000)
 
 
 class Order(models.Model):
