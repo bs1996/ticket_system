@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>All Incidents</h3>
+<hr>
+
+
+    {% csrf_token %}
+<table id="table1">
+  <tr>
+    <th>Number</th>
+    <th>Description</th>
+          <th>Status</th>
+      <th>User</th>
+      <th>Team</th>
+      <th>Assigned to</th>
+
+
+
+{% for field in num %}
+<tr>
+    <td>
+<a href="incident_agent/{{ field.number }}" >INC{{ field.number }}</a> <br></br>
+    </td>
+    <td>
+        {{ field.description }}
+    </td>
+    <td>{{field.status }}</td>
+    <td>{{field.User.first_name }} {{field.User.last_name }}</td>
+    <td>{{field.team }}</td>
+        <td>{{field.assigned_to }}</td>
+
+</tr>
+
+
+{% endfor %}
+
+</table>
+
+
+
+{% endblock content %}
