@@ -7,14 +7,15 @@ from .forms import LoginForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import login
 from django.contrib import messages
-from .models import User, Agent, Customer, Ticket
+from .models import User, Agent, Customer, Ticket, screenshots
 from django.contrib.auth.forms import UserCreationForm
-from .forms import RegisterUserForm, CustomerForm, TicketForm, OrderForm, AddCommentForm
+from .forms import RegisterUserForm, CustomerForm, TicketForm, OrderForm, AddCommentForm, AddCommentForm_Agent,\
+    ImageForm
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth import authenticate, login, logout
-from .prepare_ticket_data import prepare_data
-
+from .prepare_ticket_data import prepare_data, prepare_data_agent
+from django.core.files.storage import FileSystemStorage
 
 def register(request):
     if request.method == 'POST':
@@ -50,7 +51,14 @@ def sign_in(request):
         if user is None:
             return HttpResponse("Invalid credentials.")
         login(request, user)
-        return redirect('/')
+        current_user = request.user.id
+        agent = Agent.objects.filter(user_id=current_user)
+        if agent.exists():
+            response = redirect('/')
+            response.set_cookie('Agent', '1')
+        else:
+            response = redirect('/')
+        return response
 
     else:
         form = LoginForm()
@@ -59,7 +67,9 @@ def sign_in(request):
 
 def signout(request):
     logout(request)
-    return redirect('/')
+    response = redirect('/')
+    response.set_cookie('Agent', '1', max_age=0)
+    return response
 
 
 def contact(request):
@@ -77,7 +87,7 @@ def create_ticket(request):
             serial_number_or_client_name = request.POST['serial_number_or_client_name']
             type = request.POST['type']
             ticket_owner = current_user
-            assigned_to = 'Bartosz Stefaniak'
+            assigned_to = ''
             status = 'In Progress'
             team = 'L1'
             SLA = '0'
@@ -122,19 +132,85 @@ def my_tickets(request):
 def incident_user(request, number):
     if request.method == 'POST':
         form = AddCommentForm(request.POST)
+        form2 = ImageForm(request.POST, request.FILES)
+        if form2.is_valid():
+            image = request.FILES['image'] if 'image' in request.FILES else False
+            if image:
+                form2.save()
+                screen_numb = screenshots.objects.latest('id')
+                screen_numb.ticket_numb = number
+                screen_numb.save()
+            form2 = ImageForm()
+            form = AddCommentForm_Agent()
+            ticket_data, comments, ticket_description, text, images = prepare_data_agent(number, request)
+
+            return render(request, 'incident_agent.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
+                                                           'chat': comments, 'description': ticket_description,
+                                                           'form': form, 'form2': form2, 'images': images})
         if form.is_valid():
             comment = request.POST['add_comment']
             form = AddCommentForm()
-            ticket_data, comments, ticket_description, text = prepare_data(number, comment)
+            form2 = ImageForm()
+
+            ticket_data, comments, ticket_description, text, images = prepare_data(number, comment)
             return render(request, 'Incident_user.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
                                                    'chat': comments, 'description': ticket_description,
-                                                   'form': form})
+                                                   'form': form, 'form2': form2, 'images': images})
     else:
         form = AddCommentForm()
-        ticket_data, comments, ticket_description, text = prepare_data(number, 0)
+        form2 = ImageForm()
+
+        ticket_data, comments, ticket_description, text, images = prepare_data(number, 0)
         return render(request, 'Incident_user.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
                                                       'chat': comments, 'description': ticket_description,
-                                                      'form': form})
+                                                      'form': form, 'form2': form2, 'images': images})
+
+
+def all_tickets(request):
+    title = "tickets"
+
+    tickets = Ticket.objects.all()
+
+    num = []
+
+    for ticket in tickets:
+        num.append(ticket)
+
+    return render(request, 'All_tickets.html', {'title': title, 'num': num})
+
+
+def incident_agent(request, number):
+    if request.method == 'POST':
+        form = AddCommentForm_Agent(request.POST)
+        form2 = ImageForm(request.POST, request.FILES)
+        if form2.is_valid():
+            image = request.FILES['image'] if 'image' in request.FILES else False
+            if image:
+                form2.save()
+                screen_numb = screenshots.objects.latest('id')
+                screen_numb.ticket_numb = number
+                screen_numb.save()
+            form2 = ImageForm()
+            form = AddCommentForm_Agent()
+            ticket_data, comments, ticket_description, text, images = prepare_data_agent(number, request)
+
+            return render(request, 'incident_agent.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
+                                                           'chat': comments, 'description': ticket_description,
+                                                           'form': form, 'form2': form2, 'images': images})
+        if form.is_valid():
+            form = AddCommentForm_Agent()
+            ticket_data, comments, ticket_description, text, images = prepare_data_agent(number, request)
+            return render(request, 'incident_agent.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
+                                                   'chat': comments, 'description': ticket_description,
+                                                   'form': form, 'form2': form2, 'images': images})
+    else:
+        form = AddCommentForm_Agent()
+        form2 = ImageForm()
+
+        ticket_data, comments, ticket_description, text, images = prepare_data_agent(number, request)
+        return render(request, 'incident_agent.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
+                                                      'chat': comments, 'description': ticket_description,
+                                                      'form': form, 'form2': form2, 'images': images})
 
 
 

@@ -1,10 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
 
-</body>
-</html>
+<h3>INC{{ number }} </h3>
+<hr>
+
+<div id = text>
+    {% csrf_token %}
+{% for field in text %}{{field}} <br></br> {% endfor %}
+</div>
+<div id = fields>
+{% for field in ticket_data %}
+<input type="text" id="Name" name="Name" placeholder="" value="{{ field }}"  disabled>
+<br></br>
+{% endfor %}
+</div>
+<p id="description2"> Description </p>
+<div id = description1>
+    <textarea id="description" name="description" disabled> {{ description }} </textarea>
+    <br></br>
+    </div>
+<form action="" method="POST">
+        {% csrf_token %}
+  <p id="comment"> {{form.add_comment}} </p>
+
+
+    <div id="status">
+        {{form.field}}
+
+    </div>
+    <button id="save" type="submit">Save</button>
+</form>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+   <p id="image"> {{ form2 }}</p>
+    <p id="sendimage"><button type="submit">Upload</button></p>
+</form>
+ <p id="chat2"> chat </p>
+<div id = chat1>
+    <textarea id="chat" name="description" placeholder="" disabled >
+        {% for field in chat %}
+        {{field}}
+
+        {% endfor %}
+    </textarea>
+    <br></br>
+</div>
+<div id = 'img'>
+    <b>Screenshots</b><br></br>
+{% for img in images %}
+<img src="{{ img.image.url}}" alt="connect" style="max-height:300px">
+        {% endfor %}
+</div>
+{% endblock content %}

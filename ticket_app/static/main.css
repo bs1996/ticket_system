@@ -22,7 +22,18 @@ position: absolute;
 top: 20%;
 left: 20%;
 }
+#sendimage{
+position: absolute;
+top: 9%;
+left: 42%;
 
+}
+#img{
+position: absolute;
+top: 250%;
+left: 30%;
+
+}
 #description1{
 width: 200px;
 position: absolute;
@@ -69,7 +80,17 @@ position: absolute;
 top: 118%;
 left: 12%;
 }
+#image{
+position: absolute;
+top: 9%;
+left: 50%;
+}
 #save{
+position: absolute;
+top: 11.5%;
+left: 19%;
+}
+#status{
 position: absolute;
 top: 11.5%;
 left: 8%;

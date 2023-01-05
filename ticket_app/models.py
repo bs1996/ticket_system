@@ -89,3 +89,8 @@ class support_team(models.Model):
 class company(models.Model):
     name = models.CharField('name', max_length=120)
 
+
+class screenshots(models.Model):
+    Ticket = models.ForeignKey(Ticket, null=True, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='images/')
+    ticket_numb = models.CharField('ticket_numb', max_length=120)

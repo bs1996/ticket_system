@@ -1,14 +1,16 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, Agent, Customer, Ticket, Order
+from .models import User, Agent, Customer, Ticket, Order, screenshots
 from django.forms import ModelForm, PasswordInput
 from django.contrib.auth.password_validation import validate_password
 
 # Create your forms here.
 CHOICES = (
-    ('incident','INCIDENT'),
+    ('incident', 'INCIDENT'),
     ('major', 'MAJOR'),
 )
+options = (('Change status', 'Change status'), ('Resolved', 'Resolved'),
+		   ('In Progress', 'In Progress'), ('Pending', 'Pending'))
 
 
 class LoginForm(forms.ModelForm):
@@ -75,3 +77,22 @@ class AddCommentForm(forms.Form):
 		add_comment = cleaned_data.get("add_comment")
 
 		return cleaned_data
+
+
+class AddCommentForm_Agent(forms.Form):
+	add_comment = forms.CharField(required=True)
+	field = forms.ChoiceField(choices=options)
+
+	def clean(self):
+		cleaned_data = super(AddCommentForm_Agent, self).clean()
+		add_comment = cleaned_data.get("add_comment")
+
+		return cleaned_data
+
+
+class ImageForm(forms.ModelForm):
+	image = forms.ImageField(required=False)
+
+	class Meta:
+		model = screenshots
+		fields = ('image',)

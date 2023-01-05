@@ -21,8 +21,13 @@
     </div>
 <form action="" method="POST">
         {% csrf_token %}
-  <p id="comment"> {{form}} </p>
+  <p id="comment"> {{form.add_comment}} </p>
     <button id="save" type="submit">Save</button>
+</form>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+   <p id="image"> {{ form2 }}</p>
+    <p id="sendimage"><button type="submit">Upload</button></p>
 </form>
  <p id="chat2"> chat </p>
 <div id = chat1>
@@ -33,5 +38,11 @@
         {% endfor %}
     </textarea>
     <br></br>
+</div>
+<div id = 'img'>
+    <b>Screenshots</b><br></br>
+{% for img in images %}
+<img src="{{ img.image.url}}" alt="connect" style="max-height:300px">
+        {% endfor %}
 </div>
 {% endblock content %}
