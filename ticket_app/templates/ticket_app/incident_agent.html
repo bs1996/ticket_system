@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-
-<h3>INC{{ number }} </h3>
-<hr>
+{% include 'category.html' %}
+<h3 id="number">INC{{ number }} </h3>
 
 <div id = text>
     {% csrf_token %}
@@ -10,7 +9,8 @@
 </div>
 <div id = fields>
 {% for field in ticket_data %}
-<input type="text" id="Name" name="Name" placeholder="" value="{{ field }}"  disabled>
+
+<input type="text" id="{{ forloop.counter }}" name="Name" placeholder="" value="{{ field }}"  disabled>
 <br></br>
 {% endfor %}
 </div>
@@ -26,7 +26,12 @@
 
     <div id="status">
         {{form.field}}
-
+    </div>
+    <div id="team">
+        {{form.team}}
+    </div>
+    <div id="agent">
+       Change agent:  {{form.agent}}
     </div>
     <button id="save" type="submit">Save</button>
 </form>
@@ -36,7 +41,7 @@
     <p id="sendimage"><button type="submit">Upload</button></p>
 </form>
  <p id="chat2"> chat </p>
-<div id = chat1>
+<div id = "chat1">
     <textarea id="chat" name="description" placeholder="" disabled >
         {% for field in chat %}
         {{field}}
@@ -51,4 +56,22 @@
 <img src="{{ img.image.url}}" alt="connect" style="max-height:300px">
         {% endfor %}
 </div>
+<div id = categoryselect1 >
+
+  Change Team:   <select id="category" size="1" onchange="makeSubmenu(this.value)">
+<option value="" disabled selected>Choose Category</option>
+<option>Server</option>
+<option>Client</option>
+        <option>Hardware</option>
+<option>Network</option>
+        <option>L1</option>
+
+
+</select>
+    <select id="categorySelect" size="1" onchange="GenerateTeam(this.value)">
+<option value="" disabled selected>Choose Subcategory</option>
+<option></option>
+</select>
+</div>
+
 {% endblock content %}

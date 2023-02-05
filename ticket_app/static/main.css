@@ -12,20 +12,37 @@ ul {
 #text{
 width: 200px;
 position: absolute;
-top: 20%;
+top: 35%;
 left: 5%;
 }
 
 #fields{
 width: 200px;
 position: absolute;
-top: 20%;
+top: 35%;
 left: 20%;
 }
 #sendimage{
 position: absolute;
 top: 9%;
 left: 42%;
+}
+#categoryselect1{
+position: absolute;
+top: 20%;
+left:5%;
+
+}
+#team{
+position: absolute;
+top: 20%;
+left:50%;
+
+}
+#agent{
+position: absolute;
+top: 25%;
+left:5%;
 
 }
 #img{
@@ -37,12 +54,12 @@ left: 30%;
 #description1{
 width: 200px;
 position: absolute;
-top: 80%;
+top: 90%;
 left: 20%;
 }
 #description2{
 position: absolute;
-top: 95%;
+top: 105%;
 left: 10%;
 }
 #description{
@@ -54,30 +71,35 @@ max-width: 400px;
 width: 400px;
 height: 200px;
 }
+#id_add_comment{
+position: absolute;
+top: 50%;
+left: 25%;
 
+}
 #chat1{
 width: 400px;
 height: 400px;
 position: absolute;
-top: 130%;
+top: 140%;
 left: 20%;
 text-align:left ;
 }
 #chat2{
 position: absolute;
-top: 140%;
+top: 150%;
 left: 15%;
 }
 #add_comment{
 width: 400px;
 position: absolute;
-top: 120%;
-left: 20%;
+top: 130%;
+left: 35%;
 }
 #comment{
 width: 400px;
 position: absolute;
-top: 118%;
+top: 128%;
 left: 12%;
 }
 #image{

@@ -2,8 +2,19 @@ from .models import Customer, Ticket,screenshots
 import json, datetime
 
 
-def prepare_data(number, comment):
+def prepare_data(number, request):
+    current_user = request.user
     ticket = Ticket.objects.filter(number=number)
+    if 'add_comment' in request.POST:
+        comment = request.POST['add_comment']
+    else:
+        comment = 0
+    if 'field' in request.POST:
+        status = request.POST['field']
+    else:
+        status = ticket[0].status
+    if status != 0 and status != "Change status":
+        Ticket.objects.filter(number=number).update(status=status)
     user_id = ticket[0].User_id
     user_name = ticket[0].User.first_name
     user_lastname = ticket[0].User.last_name
@@ -24,7 +35,7 @@ def prepare_data(number, comment):
     comments_old_loads = json.loads(comments_old)
     comments_old_comments = comments_old_loads['comments']
     if comment != 0:
-        comments_new = chat_data(number, comments_old, comment, user_name, user_lastname)
+        comments_new = chat_data(number, comments_old, comment, user_name, user_lastname, 0)
     else:
         comments_new = comments_old_comments
     images = screenshots.objects.filter(ticket_numb=number)
@@ -36,7 +47,7 @@ def prepare_data(number, comment):
     return ticket_data, comments_new, ticket_description, text, images
 
 
-def chat_data(number, comments, comment, name, lastname):
+def chat_data(number, comments, comment, name, lastname, info):
     time = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S').split('.')
     if comments == "" or 0:
         arr = []
@@ -44,19 +55,34 @@ def chat_data(number, comments, comment, name, lastname):
         comments = json.dumps(comments_dict1)
     comments_dict = json.loads(comments)
     comments_arr_old = comments_dict['comments']
-    message = str(time) + " " + str(name) + " " +str(lastname) + ": " + str(comment)
+    message = str(time) + " " + str(name) + " " + str(lastname) + ": " + str(comment)
     comments_arr_old.insert(0, message)
     comments_arr_new = comments_arr_old
     chat = {"comments": comments_arr_new}
     chat_data = json.dumps(chat)
     Ticket.objects.filter(number=number).update(comments=chat_data)
+    if info != 0 and info != "":
+        message = str(time) + " " + ": " + str(info)
+        comments_arr_old.insert(0, message)
+        comments_arr_new = comments_arr_old
+        chat = {"comments": comments_arr_new}
+        chat_data = json.dumps(chat)
+        Ticket.objects.filter(number=number).update(comments=chat_data)
     return comments_arr_new
 
 
 def prepare_data_agent(number, request):
-
+    info = ""
     current_user = request.user
     ticket = Ticket.objects.filter(number=number)
+    if 'team' in request.POST:   # If team has been changed ticket team us updated in database and comment added
+        ticket_team = request.POST['team']
+        if ticket_team != 0 and ticket_team != "":
+            info = "*** " + current_user.first_name + " " + current_user.last_name + " Changed group from "\
+               + ticket[0].team + " to " \
+               + ticket_team + "***"
+            Ticket.objects.filter(number=number).update(team=ticket_team)
+            print(info)
     if 'add_comment' in request.POST:
         comment = request.POST['add_comment']
     else:
@@ -66,7 +92,17 @@ def prepare_data_agent(number, request):
     else:
         status = ticket[0].status
     if status != 0 and status != "Change status":
+        info = "*** " + current_user.first_name + " " + current_user.last_name + " Changed status from " \
+               + ticket[0].status + " to " \
+               + status + "***"
         Ticket.objects.filter(number=number).update(status=status)
+    if 'agent' in request.POST:
+        agent = request.POST['agent']
+        if agent != 0 and agent != "":
+            info = "*** " + current_user.first_name + " " + current_user.last_name + ": Ticket assigned to " \
+               + agent + ". was " \
+               + ticket[0].assigned_to + "***"
+            Ticket.objects.filter(number=number).update(assigned_to=agent)
     user_id = ticket[0].User_id
     agent_name = current_user.first_name
     agent_surname = current_user.last_name
@@ -89,7 +125,7 @@ def prepare_data_agent(number, request):
     comments_old_loads = json.loads(comments_old)
     comments_old_comments = comments_old_loads['comments']
     if comment != 0:
-        comments_new = chat_data(number, comments_old, comment, agent_name, agent_surname)
+        comments_new = chat_data(number, comments_old, comment, agent_name, agent_surname, info)
     else:
         comments_new = comments_old_comments
     images = screenshots.objects.filter(ticket_numb=number)

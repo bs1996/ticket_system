@@ -61,12 +61,8 @@ class TicketForm(forms.ModelForm):
 		fields = ['description', 'serial_number_or_client_name', 'type']
 
 
-class OrderForm(forms.ModelForm):
+class OrderForm(forms.Form):
 	description = forms.CharField(required=True)
-
-	class Meta:
-		model = Order
-		fields = ['description']
 
 
 class AddCommentForm(forms.Form):
@@ -82,6 +78,9 @@ class AddCommentForm(forms.Form):
 class AddCommentForm_Agent(forms.Form):
 	add_comment = forms.CharField(required=True)
 	field = forms.ChoiceField(choices=options)
+	team = forms.CharField(required=False)
+	agent = forms.CharField(required=False)
+
 
 	def clean(self):
 		cleaned_data = super(AddCommentForm_Agent, self).clean()

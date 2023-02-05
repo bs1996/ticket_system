@@ -7,30 +7,25 @@ CHOICES = (
     ('incident', 'INCIDENT'),
     ('major', 'MAJOR'),
 )
-CATEGORY = (
-    ('Server', 'SERVER'),
-    ('Client', 'CLIENT'),
-    ('Hardware', 'HARDWARE'),
-    ('Network', 'NETWORK')
-)
 
-SUBCATEGORY1 = (
-    ('windows server', 'Windows server'),
-    ('unix', 'Unix'),
-)
-SUBCATEGORY2 = (
-    ('windows - system performance', 'WINDOWS - SYSTEM PERFORMANCE'),
-    ('Linux - system performance', 'LINUX - SYSTEM PERFORMANCE'),
-)
-SUBCATEGORY3 = (
-    ('printer', 'PRINTER'),
-    ('laptop', 'LAPTOP'),
-    ('external devices', 'EXTERNAL DEVICES')
-)
-SUBCATEGORY4 = (
-    ('LAN', 'LAN'),
-    ('WLAN', 'WLAN'),
-)
+CATEGORY = [
+    ('Server', (
+            ('Windows server', 'Windows server'),
+            ('Unix', 'Unix'),
+        )
+    ),
+    ('Client', (
+            ('Windows - system performance', 'Windows - system performance'),
+            ('Linux - system performance', 'Linux - system performance'),
+        )
+    ),
+    ('Hardware', (
+            ('printer', 'printer'),
+            ('laptop', 'laptop'),
+        )
+    ),
+    ('Network', 'Network'),]
+
 
 
 class Customer(models.Model):
@@ -50,12 +45,6 @@ def save_user_profile(sender, instance, **kwargs):
     instance.customer.save()
 
 
-class Agent(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    position = models.CharField('position', max_length=120)
-    support_team = models.CharField('team', max_length=120)
-    phone = models.CharField('Contact Phone', max_length=20)
-
 
 class Ticket(models.Model):
     User = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
@@ -71,19 +60,44 @@ class Ticket(models.Model):
 
 
 class Order(models.Model):
-
+    User = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     number = models.IntegerField('number')
     description = models.CharField('description', max_length=1000)
     status = models.CharField('status', max_length=120)
+    category = models.CharField('category', null=True, max_length=120)
+
+
+class Category(models.Model):
+    name = models.CharField('name', max_length=120)
+
+    def _str_(self):
+        return self.name
+
+
+class Subcategory(models.Model):
+    Category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    name = models.CharField('name', max_length=120)
+
+    def _str_(self):
+        return self.name
 
 
 class support_team(models.Model):
-
     name = models.CharField('name', max_length=120)
     scope = models.CharField('scope', max_length=120)
     manager = models.CharField('manager', max_length=120)
-    category = models.CharField('category', choices=CATEGORY, max_length=120)
-    subcategory = models.CharField('subcategory', choices=SUBCATEGORY1, max_length=120)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    subcategory = models.OneToOneField(Subcategory, on_delete=models.CASCADE)
+
+    def _str_(self):
+        return self.name
+
+
+class Agent(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    position = models.CharField('position', max_length=120)
+    support_team = models.ForeignKey(support_team, on_delete=models.CASCADE)
+    phone = models.CharField('Contact Phone', max_length=20)
 
 
 class company(models.Model):
@@ -94,3 +108,6 @@ class screenshots(models.Model):
     Ticket = models.ForeignKey(Ticket, null=True, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='images/')
     ticket_numb = models.CharField('ticket_numb', max_length=120)
+
+
+

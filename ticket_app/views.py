@@ -7,7 +7,7 @@ from .forms import LoginForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import login
 from django.contrib import messages
-from .models import User, Agent, Customer, Ticket, screenshots
+from .models import User, Agent, Customer, Ticket, screenshots, Order
 from django.contrib.auth.forms import UserCreationForm
 from .forms import RegisterUserForm, CustomerForm, TicketForm, OrderForm, AddCommentForm, AddCommentForm_Agent,\
     ImageForm
@@ -16,6 +16,7 @@ from django.views import generic
 from django.contrib.auth import authenticate, login, logout
 from .prepare_ticket_data import prepare_data, prepare_data_agent
 from django.core.files.storage import FileSystemStorage
+
 
 def register(request):
     if request.method == 'POST':
@@ -106,14 +107,8 @@ def create_ticket(request):
 
 
 def order(request):
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('')
-    else:
-        form = OrderForm()
-    return render(request, 'order.html', {'form': form})
+
+    return render(request, 'order.html')
 
 
 def my_tickets(request):
@@ -141,10 +136,10 @@ def incident_user(request, number):
                 screen_numb.ticket_numb = number
                 screen_numb.save()
             form2 = ImageForm()
-            form = AddCommentForm_Agent()
-            ticket_data, comments, ticket_description, text, images = prepare_data_agent(number, request)
+            form = AddCommentForm()
+            ticket_data, comments, ticket_description, text, images = prepare_data(number, request)
 
-            return render(request, 'incident_agent.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
+            return render(request, 'Incident_user.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
                                                            'chat': comments, 'description': ticket_description,
                                                            'form': form, 'form2': form2, 'images': images})
         if form.is_valid():
@@ -152,7 +147,7 @@ def incident_user(request, number):
             form = AddCommentForm()
             form2 = ImageForm()
 
-            ticket_data, comments, ticket_description, text, images = prepare_data(number, comment)
+            ticket_data, comments, ticket_description, text, images = prepare_data(number, request)
             return render(request, 'Incident_user.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
                                                    'chat': comments, 'description': ticket_description,
                                                    'form': form, 'form2': form2, 'images': images})
@@ -160,7 +155,7 @@ def incident_user(request, number):
         form = AddCommentForm()
         form2 = ImageForm()
 
-        ticket_data, comments, ticket_description, text, images = prepare_data(number, 0)
+        ticket_data, comments, ticket_description, text, images = prepare_data(number, request)
         return render(request, 'Incident_user.html', {'number': number, 'ticket_data': ticket_data, 'text': text,
                                                       'chat': comments, 'description': ticket_description,
                                                       'form': form, 'form2': form2, 'images': images})
@@ -213,4 +208,76 @@ def incident_agent(request, number):
                                                       'form': form, 'form2': form2, 'images': images})
 
 
+def admin_rights(request):
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            current_user = request.user
+            description = request.POST['description']
+            print(description)
+            order = Order(User=current_user, number=0, description=description, status='In progress',
+                          category='admin rights')
+            order.save()
+            order = Order.objects.latest('id')
+            order.number = order.id + 1000
+            order.save()
+            return redirect('/')
+    else:
+        form = OrderForm()
+        return render(request, 'admin_rights.html', {'form': form})
 
+
+def new_smartcard(request):
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            current_user = request.user
+            description = request.POST['description']
+            print(description)
+            order = Order(User=current_user, number=0, description=description, status='In progress',
+                          category='smartcard')
+            order.save()
+            order = Order.objects.latest('id')
+            order.number = order.id + 1000
+            order.save()
+            return redirect('/')
+    else:
+        form = OrderForm()
+        return render(request, 'order_smartcard.html', {'form': form})
+
+
+def fileshare_access(request):
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            current_user = request.user
+            description = request.POST['description']
+            print(description)
+            order = Order(User=current_user, number=0, description=description, status='In progress',
+                          category='fileshare')
+            order.save()
+            order = Order.objects.latest('id')
+            order.number = order.id + 1000
+            order.save()
+            return redirect('/')
+    else:
+        form = OrderForm()
+        return render(request, 'fileshare_access.html', {'form': form})
+
+
+def my_orders(request):
+    user = request.user
+    id = user.id
+    orders = Order.objects.filter(User_id=id)
+
+    num = []
+    for order in orders:
+        num.append(order.number)
+
+    return render(request, 'my_orders.html', {'num': num})
+
+
+def order_user(request, number):
+    order_results = Order.objects.filter(number=number)
+    order = order_results[0]
+    return render(request, 'order_user.html', {'number': number,'order': order})

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
-from .models import Agent, Ticket, company, support_team, Customer
+from .models import Agent, Ticket, company, support_team, Customer, Category, Subcategory
 
 admin.site.register(Ticket)
 admin.site.register(support_team)
@@ -23,3 +23,15 @@ class Agent(admin.ModelAdmin):
     search_fields = ('user',)
 
 
+@admin.register(Category)
+class Category(admin.ModelAdmin):
+    list_display = ('name',)
+    ordering = ('name',)
+    search_fields = ('name',)
+
+
+@admin.register(Subcategory)
+class Subcategory(admin.ModelAdmin):
+    list_display = ('Category', 'name',)
+    ordering = ('name',)
+    search_fields = ('name',)
